@@ -1,0 +1,28 @@
+{
+  "name": "web322_assignement",
+  "version": "1.0.0",
+  "description": "This is a web322 assignment ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AsifKarim1971/web322_assignment2.git"
+  },
+  "author": "Asif Karim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AsifKarim1971/web322_assignment2/issues"
+  },
+  "homepage": "https://github.com/AsifKarim1971/web322_assignment2#readme",
+  "dependencies": {
+    "cloudinary": "^2.5.1",
+    "ejs": "^3.1.10",
+    "expree": "^2.1.0",
+    "express": "^4.21.1",
+    "multer": "^1.4.5-lts.1",
+    "streamifier": "^0.1.1"
+  },
+  "keywords": []
+}
