@@ -35,19 +35,22 @@ contentService
     });    
 
     // Route for fetching published articles
-    app.get("/articles", (req, res) => {
-      contentService
-        .getPublishedArticles()
-        .then((articles) => {
-          res.json(articles);
-        })
-        .catch((err) => {
-          console.error("Error fetching published articles:", err);
-          res
-            .status(500)
-            .json({ message: "Internal Server Error", error: err.message });
+   // Route for fetching published articles
+   app.get("/articles", (req, res) => {
+    contentService
+      .getPublishedArticles()
+      .then((articles) => {
+        res.render("articles", { articles: articles, title: "Articles" });
+      })
+      .catch((err) => {
+        console.error("Error fetching published articles:", err);
+        res.render("articles", {
+          message: "No articles available or error fetching.",
+          articles: [],
+          title: "Articles",
         });
-    });
+      });
+  });
 
     // Route for fetching categories
     app.get("/categories", (req, res) => {
