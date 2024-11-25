@@ -3,22 +3,17 @@ const path = require("path");
 
 let articles = [];
 let categories = [];
-let posts = []; // Add posts array
-
-function addPost(postData) {
-  const newPost = { id: posts.length + 1, ...postData }; // Assign a new ID
-  posts.push(newPost);
-  return Promise.resolve(newPost); // Return a promise for async handling
-}
-
-function getPosts() {
-  return Promise.resolve(posts);
-}
-
-module.exports = { addPost, getPosts };
+let posts = []; // Temporary posts array for added articles during runtime
 
 const articlesPath = path.resolve(__dirname, "./data/articles.json");
 const categoriesPath = path.resolve(__dirname, "./data/categories.json");
+
+function getCategoryNameById(categoryId) {
+  const category = categories.find(
+    (cat) => String(cat.id) === String(categoryId) // Convert both to strings for comparison
+  );
+  return category ? category.name : "Unknown";
+}
 
 module.exports = {
   initialize: function () {
@@ -42,16 +37,21 @@ module.exports = {
       });
     });
   },
+
   getPublishedArticles: function () {
     return new Promise((resolve, reject) => {
-      const publishedArticles = articles.filter(
-        (article) => article.published === true
-      );
+      const publishedArticles = articles
+        .filter((article) => article.published === true)
+        .map((article) => ({
+          ...article,
+          categoryName: getCategoryNameById(article.category),
+        }));
       publishedArticles.length > 0
         ? resolve(publishedArticles)
         : reject(new Error("No published articles found."));
     });
   },
+
   getCategories: function () {
     return new Promise((resolve, reject) => {
       categories.length > 0
@@ -59,49 +59,51 @@ module.exports = {
         : reject(new Error("No categories found."));
     });
   },
-  addPost: function (postData) {
+
+  addArticle: function (articleData) {
     return new Promise((resolve, reject) => {
-      // Default the 'published' field to false if it’s undefined
-      postData.published = postData.published ? true : false;
+      articleData.published = articleData.published ? true : false;
 
-      // Assign a unique id to the post (increment based on length of posts)
-      postData.id = articles.length + 1;
-
-      // Add the new post to the `articles` array (assuming `articles` is your posts array)
-      articles.push(postData);
-
-      // Resolve with the newly added post
-      resolve(postData);
+      articleData.postDate = articleData.postDate || new Date().toISOString();
+      const maxId =
+        articles.length > 0 ? Math.max(...articles.map((a) => a.id)) : 0;
+      articleData.id = maxId + 1;
+      articles.push(articleData);
+      fs.writeFile(articlesPath, JSON.stringify(articles, null, 2), (err) => {
+        if (err) {
+          console.error("Error writing to articles file:", err);
+          reject(err);
+          return;
+        }
+        resolve(articleData);
+      });
     });
   },
-  getPosts: function () {
-    // Add a method to get all posts
-    return new Promise((resolve) => {
-      resolve(posts);
-    });
-  },
+
   getPostsByCategory: function (category) {
     return new Promise((resolve, reject) => {
       const filteredPosts = posts.filter((post) => post.category == category);
-      filteredPosts.length > 0
-        ? resolve(filteredPosts)
+      const updatedPosts = filteredPosts.map((post) => ({
+        ...post,
+        categoryName: getCategoryNameById(post.category),
+      }));
+      updatedPosts.length > 0
+        ? resolve(updatedPosts)
         : reject(new Error("No results returned"));
     });
   },
-  getPostsByMinDate: function (minDateStr) {
-    return new Promise((resolve, reject) => {
-      const filteredPosts = posts.filter(
-        (post) => new Date(post.postDate) >= new Date(minDateStr)
-      );
-      filteredPosts.length > 0
-        ? resolve(filteredPosts)
-        : reject(new Error("No results returned"));
-    });
-  },
+
   getPostById: function (id) {
     return new Promise((resolve, reject) => {
-      const post = posts.find((post) => post.id == id);
-      post ? resolve(post) : reject(new Error("No result returned"));
+      const post = articles.find((article) => article.id === parseInt(id));
+      if (post) {
+        resolve({
+          ...post,
+          categoryName: getCategoryNameById(post.category),
+        });
+      } else {
+        reject(new Error("No result returned"));
+      }
     });
   },
 };
