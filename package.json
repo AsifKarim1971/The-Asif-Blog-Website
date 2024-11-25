@@ -18,12 +18,10 @@
   "homepage": "https://github.com/AsifKarim1971/web322_assignment2#readme",
   "dependencies": {
     "cloudinary": "^2.5.1",
-<<<<<<< HEAD
     "ejs": "^3.1.10",
     "expree": "^2.1.0",
-=======
->>>>>>> d93e4be3d81ec868ac0d0dbfe9153938e10f602f
     "express": "^4.21.1",
+    "express-ejs-layouts": "^2.5.1",
     "multer": "^1.4.5-lts.1",
     "streamifier": "^0.1.1"
   },

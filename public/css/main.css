@@ -1,6 +1,9 @@
 body {
   font-family: Helvetica;
   background-color: #c9e6f0;
+  background: url(/images/bg-img.jpg);
+  background-size: cover;
+  background-repeat: repeat;
   margin: 0;
   padding: 0;
   height: 100vh;
@@ -189,7 +192,7 @@ hr {
 }
 
 .text {
-  color: #f96e2a;
+  color: darkgreen;
 }
 
 .alert-warning {
@@ -200,7 +203,7 @@ hr {
 
 /* footer */
 .footer {
-  background-color: #78b3ce;
+  /* background-color: #78b3ce; */
   padding: 2px;
   position: relative;
   width: 100%;
@@ -208,7 +211,7 @@ hr {
 
 .footer p {
   margin: 0;
-  color: #fbf8ef;
+  color: black;
 }
 
 h1 {

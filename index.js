@@ -129,7 +129,7 @@ contentService
           title,
           content,
           category,
-          featureimage: imageUrl,
+          featureImage: imageUrl,
           published,
         };
 
