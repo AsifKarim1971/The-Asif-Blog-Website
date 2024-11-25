@@ -110,9 +110,9 @@ contentService
 
     // Cloudinary configuration (replace with your credentials)
     cloudinary.config({
-      cloud_name: "dnueerhxl",
-      api_key: "598345724458537",
-      api_secret: "nCFJcou1SdOiIKQiQ96e9h1Gu-Q",
+      cloud_name: "dny2cdn7q",
+      api_key: "311323868169261",
+      api_secret: "BuxD9Som5NIgPYJwBsrk1AHPyZ8",
       secure: true,
     });
 
