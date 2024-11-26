@@ -2,7 +2,7 @@
 
 ## Demo
 
-You can view the live application here: [Live Demo on Vercel](https://web322-assignment-bice.vercel.app/)
+You can view the live application here: [Live Demo on Vercel](https://vercel.com/md-asif-karims-projects-662fec7a/web322-assignment/72EMTX4zzv91wnFvQRVttWdjD7Yp/)
 
 [ Student Name: Md Asif Karim
 
@@ -26,11 +26,7 @@ Explore, read, and engage with us as we delve into various subjects, learn, and 
 
 GitHub URL: https://github.com/AsifKarim1971/web322_assignment
 
-VERCEL URL: https://web322-assignment-bice.vercel.app/
-
-https://web322-assignment-git-main-md-asif-karims-projects-662fec7a.vercel.app/
-
-https://web322-assignment-nfluixqm4-md-asif-karims-projects-662fec7a.vercel.app/
+VERCEL URL: https://vercel.com/md-asif-karims-projects-662fec7a/web322-assignment/72EMTX4zzv91wnFvQRVttWdjD7Yp
 
 ---
 
