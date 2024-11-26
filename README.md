@@ -2,7 +2,7 @@
 
 ## Demo
 
-You can view the live application here: [Live Demo on Vercel](https://github.com/AsifKarim1971/web322_assignment/)
+You can view the live application here: [Live Demo on Vercel](https://web322-assignment-bice.vercel.app/)
 
 [ Student Name: Md Asif Karim
 
