@@ -1,15 +1,7 @@
-const fs = require("fs");
-const path = require("path");
-
-let articles = [];
-let categories = [];
-let posts = []; // Temporary posts array for added articles during runtime
-
-const articlesPath = path.resolve(__dirname, "./data/articles.json");
-const categoriesPath = path.resolve(__dirname, "./data/categories.json");
-
 // Load environment variables from the .env file
 require("dotenv").config(); 
+
+
 const { Pool } = require("pg");
 
 const pool = new Pool({
@@ -22,101 +14,137 @@ const pool = new Pool({
 });
 
 function getCategoryNameById(categoryId) {
-  const category = categories.find(
-    (cat) => String(cat.id) === String(categoryId) // Convert both to strings for comparison
-  );
-  return category ? category.name : "Unknown";
+  return pool
+    .query("SELECT name FROM categories WHERE id = $1", [categoryId])
+    .then((res) => res.rows[0]?.name || "Unknown")
+    .catch(() => "Unknown");
 }
 
 module.exports = {
+  // Initialize function (no longer necessary, as we are directly querying the database)
   initialize: function () {
-    return new Promise((resolve, reject) => {
-      fs.readFile(articlesPath, "utf8", (err, data) => {
-        if (err) {
-          console.error("Error reading articles file:", err);
-          reject(err);
-          return;
-        }
-        articles = JSON.parse(data);
-        fs.readFile(categoriesPath, "utf8", (err, data) => {
-          if (err) {
-            console.error("Error reading categories file:", err);
-            reject(err);
-            return;
-          }
-          categories = JSON.parse(data);
-          resolve();
-        });
-      });
-    });
+    return Promise.resolve(); // Initialization is no longer needed for a database connection
   },
 
+  // Fetch all published articles
   getPublishedArticles: function () {
-    return new Promise((resolve, reject) => {
-      const publishedArticles = articles
-        .filter((article) => article.published === true)
-        .map((article) => ({
-          ...article,
-          categoryName: getCategoryNameById(article.category),
-        }));
-      publishedArticles.length > 0
-        ? resolve(publishedArticles)
-        : reject(new Error("No published articles found."));
-    });
+    return pool
+      .query("SELECT * FROM articles WHERE published = TRUE")
+      .then(async (res) => {
+        const articles = res.rows;
+        for (let article of articles) {
+          article.categoryName = await getCategoryNameById(article.category);
+          article.postDate = new Date(article.postDate).toLocaleDateString(); // Format postDate
+        }
+        return articles.length > 0
+          ? articles
+          : Promise.reject("No published articles found.");
+      })
+      .catch((err) => Promise.reject(err));
   },
 
+  // Get all categories
   getCategories: function () {
-    return new Promise((resolve, reject) => {
-      categories.length > 0
-        ? resolve(categories)
-        : reject(new Error("No categories found."));
-    });
+    return pool
+      .query("SELECT * FROM categories")
+      .then((res) =>
+        res.rows.length > 0 ? res.rows : Promise.reject("No categories found.")
+      )
+      .catch((err) => Promise.reject(err));
   },
 
+  // Add a new article
   addArticle: function (articleData) {
     return new Promise((resolve, reject) => {
       articleData.published = articleData.published ? true : false;
+      articleData.postDate = articleData.postDate || new Date().toISOString(); // Use current date if not provided
 
-      articleData.postDate = articleData.postDate || new Date().toISOString();
-      const maxId =
-        articles.length > 0 ? Math.max(...articles.map((a) => a.id)) : 0;
-      articleData.id = maxId + 1;
-      articles.push(articleData);
-      fs.writeFile(articlesPath, JSON.stringify(articles, null, 2), (err) => {
-        if (err) {
-          console.error("Error writing to articles file:", err);
+      // Remove the 'id' field if present, since it will be handled by the database
+      delete articleData.id;
+
+      const query = `
+        INSERT INTO articles (title, content, category, featureImage, published, postDate)
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING *;
+        `;
+
+      const values = [
+        articleData.title,
+        articleData.content,
+        articleData.category,
+        articleData.featureImage,
+        articleData.published,
+        articleData.postDate,
+      ];
+
+      pool
+        .query(query, values)
+        .then((result) => {
+          const newArticle = result.rows[0]; // The newly inserted article
+          resolve(newArticle);
+        })
+        .catch((err) => {
+          console.error("Error adding article:", err);
           reject(err);
-          return;
-        }
-        resolve(articleData);
-      });
-    });
-  },
-
-  getPostsByCategory: function (category) {
-    return new Promise((resolve, reject) => {
-      const filteredPosts = posts.filter((post) => post.category == category);
-      const updatedPosts = filteredPosts.map((post) => ({
-        ...post,
-        categoryName: getCategoryNameById(post.category),
-      }));
-      updatedPosts.length > 0
-        ? resolve(updatedPosts)
-        : reject(new Error("No results returned"));
-    });
-  },
-
-  getPostById: function (id) {
-    return new Promise((resolve, reject) => {
-      const post = articles.find((article) => article.id === parseInt(id));
-      if (post) {
-        resolve({
-          ...post,
-          categoryName: getCategoryNameById(post.category),
         });
-      } else {
-        reject(new Error("No result returned"));
-      }
     });
+  },
+
+  // Get posts by category
+  getPostsByCategory: function (category) {
+    return pool
+      .query("SELECT * FROM articles WHERE category = $1", [category])
+      .then(async (res) => {
+        const posts = res.rows;
+        for (let post of posts) {
+          post.categoryName = await getCategoryNameById(post.category);
+        }
+        return posts.length > 0 ? posts : Promise.reject("No results returned");
+      })
+      .catch((err) => Promise.reject(err));
+  },
+
+  // Get a post by its ID
+  getPostById: function (id) {
+    return pool
+      .query("SELECT * FROM articles WHERE id = $1", [id])
+      .then(async (res) => {
+        const post = res.rows[0];
+        if (post) {
+          post.categoryName = await getCategoryNameById(post.category);
+          return post;
+        } else {
+          return Promise.reject("No result returned");
+        }
+      })
+      .catch((err) => Promise.reject(err));
+  },
+
+  // Additional methods for updating and deleting articles
+
+  // Update an article by ID
+  updateArticle: function (id, articleData) {
+    const { title, content, category, featureImage, published } = articleData;
+    const query = `
+    UPDATE articles
+    SET title = $1, content = $2, category = $3, featureImage = $4, published = $5
+    WHERE id = $6
+    RETURNING id, title, content, category, featureImage, published
+  `;
+    return pool
+      .query(query, [title, content, category, featureImage, published, id])
+      .then((res) => res.rows[0])
+      .catch((err) => Promise.reject(err));
+  },
+
+  // Delete an article by ID
+  deleteArticle: function (id) {
+    const query = "DELETE FROM articles WHERE id = $1 RETURNING id";
+    return pool
+      .query(query, [id])
+      .then((res) =>
+        res.rows.length > 0 ? res.rows[0] : Promise.reject("Article not found")
+      )
+      .catch((err) => Promise.reject(err));
   },
 };
