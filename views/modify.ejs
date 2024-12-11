@@ -1,0 +1,41 @@
+
+<h1>Edit Article</h1>
+
+<form action="/article/<%= article.id %>/update" method="POST" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label for="title" class="form-label">Title:</label>
+    <input type="text" id="title" name="title" value="<%= article.title %>" class="form-control" required />
+  </div>
+
+  <div class="mb-3">
+    <label for="content" class="form-label">Content:</label>
+    <textarea id="content" name="content" rows="10" column="5" class="form-control" required><%= article.content %></textarea>
+  </div>
+
+  <!-- <div mb-3>
+    <label for="category" class="form-label">Category:</label>
+    <select id="category" name="category" class="form-select">
+      <% categories.forEach(function(category) { %>
+        <option value="<%= category.id %>" <%= category.id == article.category ? 'selected' : '' %>><%= category.name %></option>
+      <% }); %>
+    </select>
+  </div> -->
+
+
+  <div>
+    <label for="published" class="form-label">Published:</label>
+    <input type="checkbox" id="published" name="published" <%= article.published ? 'checked' : '' %> />
+  </div>
+
+  <div>
+    <button type="submit" class="btn btn-primary">Update Article</button>
+  </div>
+</form>
+
+<hr>
+
+<form action="/article/<%= article.id %>/delete" method="POST">
+  <button type="submit" style="color: red;" class="btn btn-secondary">Delete Article</button>
+  <a href="/articles" class="btn btn-secondary">Go Back</a>
+</form>
+

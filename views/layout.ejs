@@ -36,6 +36,13 @@
             <a class="nav-link" href="/articles">Articles</a>
           </li>
           <li><a class="nav-link" href="/articles/add">Add Post</a></li>
+          <% if (typeof article !== 'undefined') { %>
+            <li>
+              <a class="nav-link" href="/article/<%= article.id %>/modify"
+                >Modify Article</a
+              >
+            </li>
+            <% } %>
         </ul>
       </nav>
     </header>

@@ -22,20 +22,17 @@
         <% if (article.featureImage) { %>
         <img
           src="<%= article.featureImage %>"
-          alt="<%= article.title %>"
           class="card-img-top"
-          style="max-width: 100%; height: auto"
-          loading="lazy"
+          alt="<%= article.categoryName %>"
         />
         <% } else { %>
         <img
-          src="<%= article.image %>"
-          alt="<%= article.title %>"
+          src="/images/Asif.jpg"
           class="card-img-top"
-          style="max-width: 100%; height: auto"
-          loading="lazy"
+          alt="No image available"
         />
         <% } %>
+
         <div class="card-body">
           <h5 class="card-title"><%= article.title %></h5>
           <p class="card-text"><%= article.content.substring(0, 100) %>...</p>
