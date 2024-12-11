@@ -59,9 +59,13 @@ Configure environment variables:
 Create a .env file in the root directory and include the following:
 
 PGHOST='************'
+
 PGDATABASE='********'
+
 PGUSER='**********'
+
 PGPASSWORD='*******'
+
 PGPORT='5432'
 
 
