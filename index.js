@@ -108,15 +108,13 @@ contentService
         });
     });
 
-    // Cloudinary configuration (replace with your credentials)
-    cloudinary.config({
-      cloud_name: "dny2cdn7q",
-      api_key: "311323868169261",
-      api_secret: "BuxD9Som5NIgPYJwBsrk1AHPyZ8",
-      secure: true,
-    });
-
-    const upload = multer(); // No disk storage, image data will be uploaded directly to Cloudinary
+// Cloudinary configuration (replace with your credentials)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+const upload = multer(); // No disk storage, image data will be uploaded directly to Cloudinary
 
     // Route to handle adding new article
     app.post("/articles/add", upload.single("featureImage"), (req, res) => {
