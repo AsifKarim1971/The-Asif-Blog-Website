@@ -8,6 +8,19 @@ let posts = []; // Temporary posts array for added articles during runtime
 const articlesPath = path.resolve(__dirname, "./data/articles.json");
 const categoriesPath = path.resolve(__dirname, "./data/categories.json");
 
+// Load environment variables from the .env file
+require("dotenv").config(); 
+const { Pool } = require("pg");
+
+const pool = new Pool({
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT,
+  ssl: { rejectUnauthorized: false }, // Required for Neon.tech
+});
+
 function getCategoryNameById(categoryId) {
   const category = categories.find(
     (cat) => String(cat.id) === String(categoryId) // Convert both to strings for comparison
