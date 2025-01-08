@@ -1,4 +1,4 @@
-# Web322 Assignment
+# Web322 Blogging Assignment
 
 Student Name: Md Asif Karim
 
